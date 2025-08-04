@@ -1,12 +1,8 @@
 # Banker's Algorithm Simulator
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An interactive web-based simulator for understanding the Banker's Algorithm for deadlock avoidance in operating systems.
 
-## 🚀 Live Demo
-
-**[Try it Online](https://yourusername.github.io/bankers-algorithm-simulator)**
 
 ## ✨ Features
 
