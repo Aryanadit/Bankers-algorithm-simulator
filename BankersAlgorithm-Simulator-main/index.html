@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banker's Algorithm Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script type="text/javascript" src="script.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-shield-alt"></i> Banker's Algorithm Simulator</h1>
+                <p class="subtitle">Deadlock Avoidance Algorithm Visualization Tool</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Instructions Panel -->
+            <div class="instructions-panel" id="instructionsPanel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-info-circle"></i> How to Use</h3>
+                    <button class="close-btn" onclick="toggleInstructions()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="instructions-content">
+                    <ol>
+                        <li>Enter the number of processes and resource types</li>
+                        <li>Click "Create Tables" to generate input forms</li>
+                        <li>Fill in the <strong>Total Instances</strong> table with total available resources</li>
+                        <li>Fill in the <strong>Allocation Matrix</strong> with currently allocated resources</li>
+                        <li>Fill in the <strong>Maximum Matrix</strong> with maximum resource needs</li>
+                        <li>Click "Calculate Need Matrix" to compute Need = Maximum - Allocation</li>
+                        <li>Click "Calculate Available Resources" to determine remaining resources</li>
+                        <li>Click "Find Safe Sequence" to determine if the system is safe</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="numProcess">
+                        <i class="fas fa-users"></i> Number of Processes
+                    </label>
+                    <input type="number" id="numProcess" min="1" max="10" placeholder="Enter number of processes">
+                </div>
+                <div class="input-group">
+                    <label for="numResource">
+                        <i class="fas fa-cube"></i> Number of Resource Types
+                    </label>
+                    <input type="number" id="numResource" min="1" max="10" placeholder="Enter number of resource types">
+                </div>
+                <button class="btn btn-primary" id="createTables" onclick="createTables()">
+                    <i class="fas fa-table"></i> Create Tables
+                </button>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions" id="quickActions" style="display: none;">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <div class="action-buttons-grid">
+                    <button class="btn btn-info" onclick="loadSampleData()">
+                        <i class="fas fa-download"></i> Load Sample Data
+                    </button>
+                    <button class="btn btn-info" onclick="exportData()">
+                        <i class="fas fa-upload"></i> Export Data
+                    </button>
+                    <button class="btn btn-info" onclick="importData()">
+                        <i class="fas fa-file-import"></i> Import Data
+                    </button>
+                    <button class="btn btn-warning" onclick="simulateResourceRequest()">
+                        <i class="fas fa-hand-paper"></i> Resource Request
+                    </button>
+                    <button class="btn btn-info" onclick="showStatistics()">
+                        <i class="fas fa-chart-bar"></i> Statistics
+                    </button>
+                    <button class="btn btn-info" onclick="showStepByStep()">
+                        <i class="fas fa-play-circle"></i> Step-by-Step
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons" id="actionButtons" style="display: none;">
+                <button class="btn btn-secondary" id="findNeed" onclick="findNeed()" disabled>
+                    <i class="fas fa-calculator"></i> Calculate Need Matrix
+                </button>
+                <button class="btn btn-secondary" id="findAvailable" onclick="findAvailable()" disabled>
+                    <i class="fas fa-list-check"></i> Calculate Available Resources
+                </button>
+                <button class="btn btn-success" id="safeSequence" onclick="generateSafeSeq()" disabled>
+                    <i class="fas fa-shield-check"></i> Find Safe Sequence
+                </button>
+                <button class="btn btn-danger" id="reset" onclick="reset()">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-steps">
+                    <div class="step active" id="step1">
+                        <div class="step-icon"><i class="fas fa-table"></i></div>
+                        <span>Tables Created</span>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-icon"><i class="fas fa-calculator"></i></div>
+                        <span>Need Matrix</span>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-icon"><i class="fas fa-list-check"></i></div>
+                        <span>Available Resources</span>
+                    </div>
+                    <div class="step" id="step4">
+                        <div class="step-icon"><i class="fas fa-shield-check"></i></div>
+                        <span>Safe Sequence</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tables Container -->
+            <div class="tables-container" id="allTables"></div>
+
+            <!-- Results Panel -->
+            <div class="results-panel" id="resultsPanel" style="display: none;">
+                <div class="panel-header">
+                    <h3><i class="fas fa-chart-line"></i> Results</h3>
+                </div>
+                <div class="results-content" id="resultsContent">
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Banker's Algorithm Simulator. Educational tool for understanding deadlock avoidance.</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-cog fa-spin"></i>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+</body>
+</html> 
